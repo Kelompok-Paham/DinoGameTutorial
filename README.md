@@ -1,8 +1,8 @@
 
-### 1. Main Menu Screen
+## 1. Main Menu Screen
 Berikut adalah tutorial untuk membuat Main Menu Screen pada game Dino menggunakan Screen Manager. main menu screen game ini melibatkan dua kelas utama: ScreenManager untuk mengelola layar (screen) dan DinoMainMenuScreen sebagai layar utama (main menu screen) game
 
-## Kelas ScreenManager
+### Kelas ScreenManager
 Kelas ScreenManager bertanggung jawab untuk mengelola tampilan layar yang aktif dalam game. Berikut fungsi yang ada:
 
 
@@ -14,7 +14,7 @@ Kelas ScreenManager bertanggung jawab untuk mengelola tampilan layar yang aktif 
 
 Pada ScreenManager.cpp, kita inisialisasi instance tunggal, dan implementasi fungsi seperti AddScreen, SetCurrentScreen, Update, dan Draw.
 
-## Kelas DinoMainMenuScreen
+### Kelas DinoMainMenuScreen
 Kelas DinoMainMenuScreen adalah turunan dari Screen yang berfungsi sebagai layar utama pada game. Berikut ini beberapa elemen penting dalam DinoMainMenuScreen:
 
 
@@ -172,7 +172,7 @@ void Engine::DinoMainMenuScreen::Draw()
 
 ```
 
-### 3. Game Screen
+## 3. Game Screen
 Kelas DinoGameScreen berfungsi sebagai papan permainan game yang dibuat. Dalam kelas ini, kita akan membuat elemen-elemen utama seperti latar belakang, karakter, musik, text, dan berbagai komponen lainnya yang diperlukan untuk game. Pada kelas ini juga ditentukan apa yang bisa dilakukan oleh pemain, bagaimana rintangan dimunculkan, peraturan skor, dan sebagainya. 
 
 Pada file DinoGameScreen.h, didefinisikan fungsi dan variabel yang diperlukan. Berikut adalah implementasi dari file DinoGameScreen.h:
