@@ -1,3 +1,4 @@
+[Link video YouTube tutorial](https://www.youtube.com)
 
 ## 1. Main Menu Screen
 Berikut adalah tutorial untuk membuat Main Menu Screen pada game Dino menggunakan Screen Manager. main menu screen game ini melibatkan dua kelas utama: ScreenManager untuk mengelola layar (screen) dan DinoMainMenuScreen sebagai layar utama (main menu screen) game
