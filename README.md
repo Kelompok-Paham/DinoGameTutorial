@@ -234,11 +234,13 @@ namespace Engine {
 Semua deklarasi yang ada pada file DinoGameScreen.h kemudian diimplementasikan di file DinoGameScreen.cpp. Isi dari file DinoGameScreen.cpp ini mencakup:
 ### a. Konstruktor dan Destruktor
 *   Konstruktor
+
 Konstruktor DinoGameScreen diinisialisasi secara kosong. Sementara itu, variabel seperti sprites, musik, dan textures akan diinisialisasi pada fungsi Init().
 ```cpp
 Engine::DinoGameScreen::DinoGameScreen(){}
 ```
 *   Destruktor
+
 Destruktor berfungsi untuk memastikan semua alokasi memori dibersihkan untuk menghindari memory leak. Destruktor menghapus setiap elemen dalam daftar backgrounds, middlegrounds, foregrounds, dan obstacles, serta menghapus elemen-elemen lainnya seperti dotTexture, monsterSprite, dan text.
 ```cpp
 Engine ::DinoGameScreen::~DinoGameScreen() 
@@ -268,6 +270,7 @@ Engine ::DinoGameScreen::~DinoGameScreen()
 Fungsi `Init()` digunakan untuk menyiapkan *assets* game seperti latar belakang, karakter, input kontrol, dan musik.
 
 *   Membuat Latar Belakang
+
 Latar belakang, *middleground*, dan *foreground* ditambahkan dalam beberapa lapisan dengan metode `AddToLayer()`. Latar belakang akan bergerak dengan kecepatan berbeda untuk menghasilkan efek paralaks.
 
 ```cpp
@@ -283,6 +286,7 @@ for (int i = 5; i <= 5; i++) {
 ```
 
 *   Membuat Karakter
+
 Karakter utama (dino) diwakili oleh `monsterSprite`. Sprite ini menggunakan gambar `Dino.png`, dengan pengaturan animasi untuk berbagai aksi seperti `attack`, `idle`, `run`, dan `jump`.
 
 ```cpp
@@ -294,6 +298,7 @@ monsterSprite->SetBoundingBoxSize(monsterSprite->GetScaleWidth() - (43 * monster
 ```
 
 *   Inisialisasi Cactus Texture
+
 Kaktus-kaktus sebagai rintangan dalam game diatur dengan daftar gambar `cactusTextures` yang akan di-*spawn* secara acak saat game berjalan.
 
 ```cpp
@@ -301,6 +306,7 @@ cactusTextures = { "cactus1.png", "cactus2.png", "cactus3.png" };
 ```
 
 *   Visual Debugging dengan Dot Sprite
+
 Dot sprite digunakan untuk debugging, memperlihatkan *bounding box* dari karakter dan rintangan untuk memastikan deteksi benturan berfungsi dengan baik.
 
 ```cpp
@@ -311,6 +317,7 @@ dotSprite2 = new Sprite(dotTexture, game->GetDefaultSpriteShader(), game->GetDef
 ```
 
 *   Menambahkan Input Mapping
+
 Input mapping ditambahkan untuk mengatur kontrol karakter seperti lompat (`Jump`), serang (`Attack`), dan navigasi lainnya. Setiap kontrol dikaitkan dengan tombol tertentu, misalnya, `Jump` diatur dengan tombol panah `UP`.
 
 ```cpp
@@ -318,6 +325,7 @@ game->GetInputManager()->AddInputMapping("Jump", SDLK_UP)->AddInputMapping("Atta
 ```
 
 *   Inisialisasi Musik dan Efek Suara
+
 Musik dan efek suara dimuat menggunakan objek `Music` dan `Sound`. Musik diputar secara berulang, sedangkan efek suara dimainkan saat terjadi aksi tertentu.
 
 ```cpp
@@ -326,6 +334,7 @@ sound = (new Sound("jump.wav"))->SetVolume(100);
 ```
 
 *   Inisialisasi Skor dan Teks Game Over
+
 Teks skor (`textScore`) diatur untuk menampilkan nilai skor pada layar, sedangkan `textGameOver` akan muncul saat pemain kalah.
 
 ```cpp
@@ -334,6 +343,7 @@ textScore->SetScale(2.0f)->SetColor(0, 0, 0)->SetPosition(0, game->GetSettings()
 ```
 
 *   Pengaturan Warna Latar
+
 Warna latar belakang diset ke nilai RGB tertentu.
 
 ```cpp
@@ -371,7 +381,9 @@ void Engine::DinoGameScreen::ResetGameState() {
 Berikut adalah tutorial langkah demi langkah untuk memahami dan mengimplementasikan fungsi `Update` dari kelas `DinoGameScreen`:
 
 *   Parallax Scrolling
+
 Pada bagian ini, fungsi `MoveLayer` digunakan untuk menggerakkan layer background dengan kecepatan yang berbeda, menciptakan efek **parallax scrolling**. Lapisan-lapisan bergerak pada kecepatan yang semakin cepat dari latar belakang ke latar depan (`backgrounds`, `middlegrounds`, `foregrounds`), yang memberi efek kedalaman visual pada game.
+
 ```cpp
 MoveLayer(backgrounds, 0.005f);
 MoveLayer(middlegrounds, 0.03f);
@@ -379,6 +391,7 @@ MoveLayer(foregrounds, cactusSpeed);
 ```
 
 *   Mengatur Kembali ke Menu Utama
+
 Ketika tombol yang dipetakan sebagai `mainmenu` (biasanya tombol `Escape`) dilepaskan, layar akan beralih ke menu utama menggunakan `ScreenManager`.
 ```cpp
 if (game->GetInputManager()->IsKeyReleased("mainmenu")) {
@@ -387,6 +400,7 @@ ScreenManager::GetInstance(game)->SetCurrentScreen("mainmenu");
 ```
 
 *   Menghitung dan Menambah Skor
+
 Setiap 500 ms, nilai `score` bertambah satu. `scoreUpdateTime` direset setelah penambahan skor. Variabel `textScore` kemudian diperbarui agar menampilkan skor terbaru di layar.
 ```cpp
 scoreUpdateTime += game->GetGameTime();  // Menghitung waktu berlalu
@@ -398,12 +412,14 @@ textScore->SetText("Score: " + std::to_string(score));
 ```
 
 *   Mengatur Animasi Monster
+
 Untuk setiap frame baru, animasi `idle` dari monster akan dimainkan. Animasi ini bisa diganti nanti tergantung pada aksi tertentu seperti melompat atau menyerang.
 ```cpp
 monsterSprite->PlayAnim("idle");
 ```
 
 *   Menangkap Input untuk Menggerakkan Karakter
+
 Posisi awal monster diambil dan disimpan dalam variabel `x` dan `y`. Hal ini memungkinkan karakter berada di posisi yang sama jika tidak ada aksi tertentu.
 ```cpp
 vec2 oldMonsterPos = monsterSprite->GetPosition();
@@ -412,6 +428,7 @@ monsterSprite->SetPosition(x, y);
 ```
 
 *   Menangani Input Jump
+
 Ketika tombol `Jump` ditekan dan monster sedang tidak dalam status `jump`, nilai `yVelocity` diatur, yang memungkinkan karakter melompat. **Gravitasi** ditambahkan untuk mempercepat laju jatuhnya karakter saat berada di udara.
 ```cpp
 if (game->GetInputManager()->IsKeyPressed("Jump") && !jump) {
