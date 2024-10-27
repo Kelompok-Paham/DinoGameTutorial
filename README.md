@@ -385,6 +385,167 @@ void Engine::DinoGameScreen::spawnObstacle()
     obstacles.push_back(cactus);
 }
 ```
+## 5. Restart Menu
+Fungsi-fungsi di dalam kelas `DinoRestartMenuScreen` bertujuan untuk menyediakan tampilan dan interaksi menu restart ketika pemain kalah. Kelas ini mengelola semua aspek visual dan logika navigasi dalam layar restart, memastikan pengguna dapat memilih antara mengulang permainan atau keluar.
+
+### Penjelasan Fungsi
+#### 1. Konstruktor DinoRestartMenuScreen()
+Fungsi: Konstruktor ini bertujuan untuk inisialisasi awal variabel-variabel anggota dalam kelas DinoRestartMenuScreen, yaitu text, bgSprite, dan textGameOver, yang diatur ke NULL sebagai nilai awal.
+Penjelasan: Dengan mengatur nilai awal variabel ke NULL, konstruktor memastikan bahwa variabel-variabel tersebut tidak memiliki nilai sampah yang bisa menyebabkan masalah saat digunakan.
+#### 2. Init()
+Fungsi: Init() bertugas untuk menginisialisasi elemen-elemen visual dan input pada layar restart game, termasuk:
+Latar belakang (bgSprite)
+Tombol restart dan tombol keluar
+Teks "Game Over" dan skor akhir
+Input navigasi tombol menggunakan panah kanan dan kiri serta tombol Space untuk memilih.
+Penjelasan:
+Membuat sprite latar belakang yang menyesuaikan dengan ukuran layar game.
+Membuat tombol restart dan tombol keluar (restartButton dan exitButton), menambahkan animasi normal, hover, dan press untuk efek visual saat tombol dipilih atau ditekan, dan menentukan posisi tombol di layar.
+Membuat teks "Game Over" dan skor akhir dengan pengaturan warna, font, dan ukuran yang sesuai.
+Menambahkan input navigasi untuk berpindah antar tombol dan mengonfirmasi pilihan.
+Menyimpan tombol dalam daftar buttons, serta mengatur tombol restartButton sebagai tombol default yang dipilih (dengan status HOVER).
+#### 3. Update()
+Fungsi: Update() menangani logika yang berkaitan dengan interaksi pengguna, yaitu navigasi antar tombol dan pemrosesan ketika tombol ditekan.
+Penjelasan:
+Mengubah warna latar belakang sesuai dengan kebutuhan tampilan menu restart.
+Menangani navigasi antar tombol dengan memeriksa apakah pengguna menekan next (panah kanan) atau prev (panah kiri), lalu memperbarui status tombol yang sedang dipilih.
+Jika pengguna menekan tombol press (tombol Space), Update() mengecek tombol mana yang dipilih dan menentukan tindakan:
+Tombol Restart: Mengganti layar saat ini ke DinoGameScreen (layar utama game) dan memanggil ResetGameState() untuk memulai ulang permainan.
+Tombol Exit: Mengatur status game ke EXIT, yang menandakan game akan keluar.
+#### 4. Draw()
+Fungsi: Draw() bertugas untuk menggambar elemen-elemen visual di layar, termasuk latar belakang, tombol-tombol, serta teks "Game Over" dan skor akhir.
+Penjelasan:
+Memanggil Draw() pada bgSprite untuk menampilkan latar belakang.
+Melakukan loop melalui daftar buttons dan memanggil Draw() pada setiap tombol untuk menampilkan status terkini (normal, hover, atau press).
+Menampilkan teks "Game Over" dan teks skor akhir (text dan textGameOver).
+#### 5. SetFinalScore(int finalScore)
+Fungsi: SetFinalScore() digunakan untuk memperbarui teks yang menampilkan skor akhir.
+Penjelasan:
+Mengubah teks textGameOver untuk menampilkan nilai skor akhir menggunakan parameter finalScore.
+Mengatur posisi dan warna dari teks skor akhir agar sesuai dengan tampilan menu.
+
+### Kode
+```cpp
+#include "DinoRestartMenuScreen.h"
+#include "DinoGameScreen.h"
+
+Engine::DinoRestartMenuScreen::DinoRestartMenuScreen()
+{
+    text = NULL;
+    bgSprite = NULL;
+    textGameOver = NULL;
+
+}
+
+void Engine::DinoRestartMenuScreen::Init()
+{
+    // Create background texture and sprite
+    Texture* texture = new Texture("buttons.png");
+    Texture* restartTexture = new Texture("restart.png");
+
+    Texture* bgTexture = new Texture("background.png");
+
+    bgSprite = new Sprite(bgTexture, game->GetDefaultSpriteShader(), game->GetDefaultQuad());
+    bgSprite->SetSize(game->GetSettings()->screenWidth, game->GetSettings()->screenHeight);
+
+    // Create Restart Button
+    Sprite* restartSprite = (new Sprite(restartTexture, game->GetDefaultSpriteShader(), game->GetDefaultQuad()))
+        ->SetNumXFrames(1)->SetNumYFrames(1)->AddAnimation("normal", 1, 1)
+        ->AddAnimation("hover", 1, 1)->AddAnimation("press", 1, 1)->SetAnimationDuration(400);
+    restartSprite->SetSize(120, 120); 
+    Button* restartButton = new Button(restartSprite, "restart");
+    restartButton->SetPosition((game->GetSettings()->screenWidth / 2) - (restartSprite->GetScaleWidth() / 2), 500);
+    buttons.push_back(restartButton);
+
+    // Create Exit Button
+    Sprite* exitSprite = (new Sprite(texture, game->GetDefaultSpriteShader(), game->GetDefaultQuad()))
+        ->SetNumXFrames(6)->SetNumYFrames(1)->AddAnimation("normal", 2, 2)
+        ->AddAnimation("hover", 0, 1)->AddAnimation("press", 0, 1)->SetAnimationDuration(400);
+    Button* exitButton = new Button(exitSprite, "exit");
+    exitButton->SetPosition((game->GetSettings()->screenWidth / 2) - (exitSprite->GetScaleWidth() / 2), 350);
+    buttons.push_back(exitButton);
+
+    // Set active button
+    currentButtonIndex = 0;
+    buttons[currentButtonIndex]->SetButtonState(Engine::ButtonState::HOVER);
+
+    // Create Text
+    text = (new Text("8-bit Arcade In.ttf", 200, game->GetDefaultTextShader()))
+        ->SetText("Game Over")->SetPosition(game->GetSettings()->screenWidth * 0.5f - 400, game->GetSettings()->screenHeight - 200.0f)->SetColor(213, 168, 134);
+    
+    textGameOver = (new Text("lucon.ttf", 30, game->GetDefaultTextShader()))
+        ->SetText("Final Score: 0")  // Set teks awal
+        ->SetPosition(game->GetSettings()->screenWidth * 0.5f - 200, game->GetSettings()->screenHeight - 150)
+        ->SetColor(213, 168, 134);
+
+    // Add input mappings
+    game->GetInputManager()->AddInputMapping("next", SDLK_RIGHT)
+        ->AddInputMapping("prev", SDLK_LEFT)
+        ->AddInputMapping("press", SDLK_SPACE);
+}
+
+void Engine::DinoRestartMenuScreen::Update()
+{
+    // Update background color
+    game->SetBackgroundColor(52, 155, 235);
+
+    // Navigate through buttons
+    if (game->GetInputManager()->IsKeyReleased("next")) {
+        buttons[currentButtonIndex]->SetButtonState(Engine::ButtonState::NORMAL);
+        currentButtonIndex = (currentButtonIndex < (int)buttons.size() - 1) ? currentButtonIndex + 1 : currentButtonIndex;
+        buttons[currentButtonIndex]->SetButtonState(Engine::ButtonState::HOVER);
+    }
+
+    if (game->GetInputManager()->IsKeyReleased("prev")) {
+        buttons[currentButtonIndex]->SetButtonState(Engine::ButtonState::NORMAL);
+        currentButtonIndex = currentButtonIndex > 0 ? currentButtonIndex - 1 : currentButtonIndex;
+        buttons[currentButtonIndex]->SetButtonState(Engine::ButtonState::HOVER);
+    }
+
+    // Handle button press
+    if (game->GetInputManager()->IsKeyReleased("press")) {
+        Button* b = buttons[currentButtonIndex];
+        b->SetButtonState(Engine::ButtonState::PRESS);
+
+        if (b->GetButtonName() == "restart") {
+      ScreenManager::GetInstance(game)->SetCurrentScreen("ingame"); // Kembali ke ingame
+
+            // Panggil metode RestartGame() pada instance dari DinoGameScreen
+            DinoGameScreen* gameScreen = dynamic_cast<DinoGameScreen*>(ScreenManager::GetInstance(game)->GetCurrentScreen());
+            if (gameScreen) {
+                gameScreen->ResetGameState(); 
+            }
+        }
+        else if (b->GetButtonName() == "exit") {
+            game->SetState(Engine::State::EXIT);
+        }
+    }
+
+    // Update buttons
+    for (Button* b : buttons) {
+        b->Update(game->GetGameTime());
+    }
+}
+
+void Engine::DinoRestartMenuScreen::Draw()
+{
+    bgSprite->Draw();
+
+    for (Button* b : buttons) {
+        b->Draw();
+    }
+
+    text->Draw();
+    textGameOver->Draw();
+}
+
+void Engine::DinoRestartMenuScreen::SetFinalScore(int finalScore) {
+    std::string finalScoreText = "Final Score: " + std::to_string(finalScore);
+    //textGameOver->SetScale(3.0f)->SetText("Game Over! Final Score: " + std::to_string(score))->SetPosition(game->GetSettings()->screenWidth * 0.5f - 500, game->GetSettings()->screenHeight - 500.0f)->SetColor(0, 0, 0);
+
+    textGameOver->SetText(finalScoreText)->SetPosition(game->GetSettings()->screenWidth * 0.5f - 130, game->GetSettings()->screenHeight - 240.0f)->SetColor(213, 168, 134);
+}
+```
 
 Text can be **bold**, _italic_, or ~~strikethrough~~.
 
