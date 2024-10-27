@@ -744,7 +744,7 @@ void Engine::DinoRestartMenuScreen::SetFinalScore(int finalScore) {
 }
 ```
 
-## 6. Dino game.cpp
+## 6. Dino game
 Kelas ini berfungsi sebagai struktur dasar game yang memungkinkan perpindahan antara layar menu utama dan layar permainan serta pengaturan loop utama yang menyatukan pembaruan dan rendering layar. Berikut adalah penjelasan fungsi dan alur kode:
 ### 1. Struktur Program
 #### a. Inklusi Header:
@@ -798,6 +798,42 @@ void Engine::Lesson12_DinoGame::Render()
 }
 ```
 Render() memanggil Draw() dari ScreenManager, yang menampilkan tampilan grafis pada layar sesuai dengan tampilan atau elemen game yang aktif.
+
+#### Kode Keseluruhan
+```cpp
+#include "Lesson12_DinoGame.h"
+#include "DinoMainMenuScreen.h"
+#include "DinoGameScreen.h"
+#include "DinoRestartMenuScreen.h"
+
+
+Engine::Lesson12_DinoGame::Lesson12_DinoGame(Setting* setting) :Engine::Game(setting)
+{
+	setting->windowTitle = "Dino Game";
+}
+
+Engine::Lesson12_DinoGame::~Lesson12_DinoGame()
+{
+}
+
+void Engine::Lesson12_DinoGame::Init()
+{
+	Engine::ScreenManager::GetInstance(this)->AddScreen("ingame", new DinoGameScreen())
+		->AddScreen("mainmenu", new DinoMainMenuScreen())->AddScreen("restartmenu", new DinoRestartMenuScreen())->SetCurrentScreen("mainmenu");
+
+}
+
+void Engine::Lesson12_DinoGame::Update()
+{
+	Engine::ScreenManager::GetInstance(this)->Update();
+	
+}
+
+void Engine::Lesson12_DinoGame::Render()
+{
+	Engine::ScreenManager::GetInstance(this)->Draw();
+}
+```
 
 Text can be **bold**, _italic_, or ~~strikethrough~~.
 
