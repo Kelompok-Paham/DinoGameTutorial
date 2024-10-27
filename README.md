@@ -169,8 +169,8 @@ void Engine::DinoMainMenuScreen::Draw()
 	// Render title 
 	text->Draw();
 }
-
 ```
+
 
 ## 3. Game Screen
 Kelas DinoGameScreen berfungsi sebagai papan permainan game yang dibuat. Dalam kelas ini, kita akan membuat elemen-elemen utama seperti latar belakang, karakter, musik, text, dan berbagai komponen lainnya yang diperlukan untuk game. Pada kelas ini juga ditentukan apa yang bisa dilakukan oleh pemain, bagaimana rintangan dimunculkan, peraturan skor, dan sebagainya. 
