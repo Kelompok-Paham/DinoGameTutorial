@@ -62,13 +62,11 @@ Berikut implementasi DinoMainMenuScreen.cpp:
 
 ```cpp
 #include "DinoMainMenuScreen.h"
-
 Engine::DinoMainMenuScreen::DinoMainMenuScreen()
 {
 	text = NULL;
 	bgSprite = NULL;
 }
-
 void Engine::DinoMainMenuScreen::Init()
 {
 	// Create a Texture
@@ -89,7 +87,6 @@ void Engine::DinoMainMenuScreen::Init()
 	playButton->SetPosition((game->GetSettings()->screenWidth / 2) - (playSprite->GetScaleWidth() / 2),
 		500);
 	buttons.push_back(playButton);
-
 	Button* exitButton = new Button(exitSprite, "exit");
 	exitButton->SetPosition((game->GetSettings()->screenWidth / 2) - (exitSprite->GetScaleWidth() / 2),
 		350);
@@ -109,7 +106,6 @@ void Engine::DinoMainMenuScreen::Update()
 {
 	// Set background
 	game->SetBackgroundColor(52, 155, 235);
-
 	if (game->GetInputManager()->IsKeyReleased("next")) {
 		// Set previous button to normal state
 		buttons[currentButtonIndex]->SetButtonState(Engine::ButtonState::NORMAL);
@@ -118,7 +114,6 @@ void Engine::DinoMainMenuScreen::Update()
 		// Set current button to hover state
 		buttons[currentButtonIndex]->SetButtonState(Engine::ButtonState::HOVER);
 	}
-
 	if (game->GetInputManager()->IsKeyReleased("prev")) {
 		// Set previous button to normal state
 		buttons[currentButtonIndex]->SetButtonState(Engine::ButtonState::NORMAL);
@@ -127,7 +122,6 @@ void Engine::DinoMainMenuScreen::Update()
 		// Set current button to hover state
 		buttons[currentButtonIndex]->SetButtonState(Engine::ButtonState::HOVER);
 	}
-
 	if (game->GetInputManager()->IsKeyReleased("press")) {
 		// Set current button to press state
 		Button* b = buttons[currentButtonIndex];
