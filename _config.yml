@@ -1,3 +1,3 @@
-theme: jekyll-theme-time-machine
+theme: jekyll-theme-minimal
 title: [Dino Game Tutorial]
 description: "Game ini merupakan game sederhana yang menampilkan karakter Dino. Tujuan utama dari game ini adalah membantu Dino menghindari rintangan dengan melompat atau menghindar. Pemain akan mengontrol Dino agar dapat bertahan selama mungkin tanpa menabrak rintangan. Dalam pengembangannya game engine ini dilengkapi dengan beberapa library di antaranya adalah OpenGL SDL, Freetype, dan SOIL. "
