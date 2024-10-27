@@ -232,7 +232,7 @@ namespace Engine {
 ```
 
 Semua deklarasi yang ada pada file DinoGameScreen.h kemudian diimplementasikan di file DinoGameScreen.cpp. Isi dari file DinoGameScreen.cpp ini mencakup:
-## a. Konstruktor dan Destruktor
+### a. Konstruktor dan Destruktor
 *   Konstruktor
 Konstruktor DinoGameScreen diinisialisasi secara kosong. Sementara itu, variabel seperti sprites, musik, dan textures akan diinisialisasi pada fungsi Init().
 ```cpp
@@ -264,7 +264,7 @@ Engine ::DinoGameScreen::~DinoGameScreen()
     delete textRestart;
 }
 ```
-## b. Inisialisasi Game di Fungsi Init()
+### b. Inisialisasi Game di Fungsi Init()
 Fungsi `Init()` digunakan untuk menyiapkan *assets* game seperti latar belakang, karakter, input kontrol, dan musik.
 
 *   Membuat Latar Belakang
@@ -340,7 +340,7 @@ Warna latar belakang diset ke nilai RGB tertentu.
 game->SetBackgroundColor(102, 195, 242);
 ```
 
-## c. Fungsi Reset Game (`ResetGameState`)
+### c. Fungsi Reset Game (ResetGameState)
 Fungsi ini digunakan untuk mengatur ulang status permainan setiap kali game dimulai ulang. Ini mencakup pengaturan posisi karakter, skor, *timer*, dan mengosongkan daftar *obstacles*.
 
 ```cpp
@@ -367,24 +367,62 @@ void Engine::DinoGameScreen::ResetGameState() {
     }
 }
 ```
+### d. fungsi update
+Berikut adalah tutorial langkah demi langkah untuk memahami dan mengimplementasikan fungsi `Update` dari kelas `DinoGameScreen`:
 
-## d. Fungsi `spawnObstacle`
-Fungsi ini untuk menghasilkan rintangan kaktus secara acak di posisi kanan layar. Fungsi memilih tekstur kaktus dari daftar dan menambahkan sprite kaktus ke daftar `obstacles`.
-
+*   Parallax Scrolling
+Pada bagian ini, fungsi `MoveLayer` digunakan untuk menggerakkan layer background dengan kecepatan yang berbeda, menciptakan efek **parallax scrolling**. Lapisan-lapisan bergerak pada kecepatan yang semakin cepat dari latar belakang ke latar depan (`backgrounds`, `middlegrounds`, `foregrounds`), yang memberi efek kedalaman visual pada game.
 ```cpp
-void Engine::DinoGameScreen::spawnObstacle()
-{
-    int randomIndex = rand() % cactusTextures.size();
-    Texture* cactusTexture = new Texture(cactusTextures[randomIndex]);
+MoveLayer(backgrounds, 0.005f);
+MoveLayer(middlegrounds, 0.03f);
+MoveLayer(foregrounds, cactusSpeed);
+```
 
-    Sprite* cactus = new Sprite(cactusTexture, game->GetDefaultSpriteShader(), game->GetDefaultQuad());
-    cactus->SetScale(4.0f);
-    cactus->SetPosition(game->GetSettings()->screenWidth, 0);
-    cactus->SetBoundingBoxSize(cactus->GetScaleWidth() - (16 * cactus->GetScale()), cactus->GetScaleHeight() - (4 * cactus->GetScale()));
-
-    obstacles.push_back(cactus);
+*   Mengatur Kembali ke Menu Utama
+Ketika tombol yang dipetakan sebagai `mainmenu` (biasanya tombol `Escape`) dilepaskan, layar akan beralih ke menu utama menggunakan `ScreenManager`.
+```cpp
+if (game->GetInputManager()->IsKeyReleased("mainmenu")) {
+ScreenManager::GetInstance(game)->SetCurrentScreen("mainmenu");
 }
 ```
+
+*   Menghitung dan Menambah Skor
+Setiap 500 ms, nilai `score` bertambah satu. `scoreUpdateTime` direset setelah penambahan skor. Variabel `textScore` kemudian diperbarui agar menampilkan skor terbaru di layar.
+```cpp
+scoreUpdateTime += game->GetGameTime();  // Menghitung waktu berlalu
+if (scoreUpdateTime >= 500) {            // Tambahkan skor setiap 500ms
+score += 1;
+scoreUpdateTime = 0;                 // Reset timer
+}
+textScore->SetText("Score: " + std::to_string(score));
+```
+
+*   Mengatur Animasi Monster
+Untuk setiap frame baru, animasi `idle` dari monster akan dimainkan. Animasi ini bisa diganti nanti tergantung pada aksi tertentu seperti melompat atau menyerang.
+```cpp
+monsterSprite->PlayAnim("idle");
+```
+
+*   Menangkap Input untuk Menggerakkan Karakter
+Posisi awal monster diambil dan disimpan dalam variabel `x` dan `y`. Hal ini memungkinkan karakter berada di posisi yang sama jika tidak ada aksi tertentu.
+```cpp
+vec2 oldMonsterPos = monsterSprite->GetPosition();
+float x = oldMonsterPos.x, y = oldMonsterPos.y;
+monsterSprite->SetPosition(x, y);
+```
+
+*   Menangani Input Jump
+Ketika tombol `Jump` ditekan dan monster sedang tidak dalam status `jump`, nilai `yVelocity` diatur, yang memungkinkan karakter melompat. **Gravitasi** ditambahkan untuk mempercepat laju jatuhnya karakter saat berada di udara.
+```cpp
+if (game->GetInputManager()->IsKeyPressed("Jump") && !jump) {
+float ratio = (game->GetGameTime() / 16.7f); // Rasio FPS untuk kecepatan
+gravity = 0.075f * ratio;
+yVelocity = 1.8f;
+jump = true;
+sound->Play(false);
+}
+```
+
 ## 5. Restart Menu
 Fungsi-fungsi di dalam kelas `DinoRestartMenuScreen` bertujuan untuk menyediakan tampilan dan interaksi menu restart ketika pemain kalah. Kelas ini mengelola semua aspek visual dan logika navigasi dalam layar restart, memastikan pengguna dapat memilih antara mengulang permainan atau keluar.
 
