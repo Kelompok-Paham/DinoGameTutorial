@@ -156,6 +156,7 @@ void Engine::DinoMainMenuScreen::Draw()
 Kelas DinoGameScreen berfungsi sebagai papan permainan game yang dibuat. Dalam kelas ini, kita akan membuat elemen-elemen utama seperti latar belakang, karakter, musik, text, dan berbagai komponen lainnya yang diperlukan untuk game. Pada kelas ini juga ditentukan apa yang bisa dilakukan oleh pemain, bagaimana rintangan dimunculkan, peraturan skor, dan sebagainya. 
 
 Pada file DinoGameScreen.h, didefinisikan fungsi dan variabel yang diperlukan. Berikut adalah implementasi dari file DinoGameScreen.h:
+
 ```cpp
 #ifndef DINOGAMESCREEN_H
 #define DINOGAMESCREEN_H
@@ -231,13 +232,13 @@ namespace Engine {
 ```
 
 Semua deklarasi yang ada pada file DinoGameScreen.h kemudian diimplementasikan di file DinoGameScreen.cpp. Isi dari file DinoGameScreen.cpp ini mencakup:
-*   Konstruktor dan Destruktor
-#### a. Konstruktor
+## a. Konstruktor dan Destruktor
+*   Konstruktor
 Konstruktor DinoGameScreen diinisialisasi secara kosong. Sementara itu, variabel seperti sprites, musik, dan textures akan diinisialisasi pada fungsi Init().
 ```cpp
 Engine::DinoGameScreen::DinoGameScreen(){}
 ```
-#### b. Destruktor
+*   Destruktor
 Destruktor berfungsi untuk memastikan semua alokasi memori dibersihkan untuk menghindari memory leak. Destruktor menghapus setiap elemen dalam daftar backgrounds, middlegrounds, foregrounds, dan obstacles, serta menghapus elemen-elemen lainnya seperti dotTexture, monsterSprite, dan text.
 ```cpp
 Engine ::DinoGameScreen::~DinoGameScreen() 
@@ -261,6 +262,127 @@ Engine ::DinoGameScreen::~DinoGameScreen()
     delete textScore;
     delete textGameOver;
     delete textRestart;
+}
+```
+## b. Inisialisasi Game di Fungsi Init()
+Fungsi `Init()` digunakan untuk menyiapkan *assets* game seperti latar belakang, karakter, input kontrol, dan musik.
+
+*   Membuat Latar Belakang
+Latar belakang, *middleground*, dan *foreground* ditambahkan dalam beberapa lapisan dengan metode `AddToLayer()`. Latar belakang akan bergerak dengan kecepatan berbeda untuk menghasilkan efek paralaks.
+
+```cpp
+for (int i = 1; i <= 2; i++) {
+    AddToLayer(backgrounds, "bgdesert" + to_string(i) + ".png");
+}
+for (int i = 3; i <= 4; i++) {
+    AddToLayer(middlegrounds, "bgdesert" + to_string(i) + ".png");
+}
+for (int i = 5; i <= 5; i++) {
+    AddToLayer(foregrounds, "bgdesert" + to_string(i) + ".png");
+}
+```
+
+*   Membuat Karakter
+Karakter utama (dino) diwakili oleh `monsterSprite`. Sprite ini menggunakan gambar `Dino.png`, dengan pengaturan animasi untuk berbagai aksi seperti `attack`, `idle`, `run`, dan `jump`.
+
+```cpp
+Texture* monsterTexture = new Texture("Dino.png");
+
+monsterSprite = new Sprite(monsterTexture, game->GetDefaultSpriteShader(), game->GetDefaultQuad());
+monsterSprite->SetPosition(90, 0)->SetNumXFrames(24)->SetNumYFrames(1)->SetAnimationDuration(70)->SetScale(5.0f)->AddAnimation("attack", 13, 14)->AddAnimation("idle", 17, 20)->AddAnimation("run", 17, 20)->AddAnimation("jump", 17, 20);
+monsterSprite->SetBoundingBoxSize(monsterSprite->GetScaleWidth() - (43 * monsterSprite->GetScale()), monsterSprite->GetScaleHeight() - (4 * monsterSprite->GetScale()));
+```
+
+*   Inisialisasi Cactus Texture
+Kaktus-kaktus sebagai rintangan dalam game diatur dengan daftar gambar `cactusTextures` yang akan di-*spawn* secara acak saat game berjalan.
+
+```cpp
+cactusTextures = { "cactus1.png", "cactus2.png", "cactus3.png" };
+```
+
+*   Visual Debugging dengan Dot Sprite
+Dot sprite digunakan untuk debugging, memperlihatkan *bounding box* dari karakter dan rintangan untuk memastikan deteksi benturan berfungsi dengan baik.
+
+```cpp
+dotTexture = new Texture("dot.png");
+dotSprite1 = new Sprite(dotTexture, game->GetDefaultSpriteShader(), game->GetDefaultQuad());
+dotSprite2 = new Sprite(dotTexture, game->GetDefaultSpriteShader(), game->GetDefaultQuad());
+// Lanjutkan inisialisasi dotSprite lainnya
+```
+
+*   Menambahkan Input Mapping
+Input mapping ditambahkan untuk mengatur kontrol karakter seperti lompat (`Jump`), serang (`Attack`), dan navigasi lainnya. Setiap kontrol dikaitkan dengan tombol tertentu, misalnya, `Jump` diatur dengan tombol panah `UP`.
+
+```cpp
+game->GetInputManager()->AddInputMapping("Jump", SDLK_UP)->AddInputMapping("Attack", SDLK_x)->AddInputMapping("Run Right", SDL_CONTROLLER_BUTTON_DPAD_RIGHT);
+```
+
+*   Inisialisasi Musik dan Efek Suara
+Musik dan efek suara dimuat menggunakan objek `Music` dan `Sound`. Musik diputar secara berulang, sedangkan efek suara dimainkan saat terjadi aksi tertentu.
+
+```cpp
+music = (new Music("2021-08-16_-_8_Bit_Adventure_-_www.FesliyanStudios.com.ogg"))->SetVolume(40)->Play(true);
+sound = (new Sound("jump.wav"))->SetVolume(100);
+```
+
+*   Inisialisasi Skor dan Teks Game Over
+Teks skor (`textScore`) diatur untuk menampilkan nilai skor pada layar, sedangkan `textGameOver` akan muncul saat pemain kalah.
+
+```cpp
+textScore = new Text("lucon.ttf", 24, game->GetDefaultTextShader());
+textScore->SetScale(2.0f)->SetColor(0, 0, 0)->SetPosition(0, game->GetSettings()->screenHeight - (textScore->GetFontSize() * textScore->GetScale()));
+```
+
+*   Pengaturan Warna Latar
+Warna latar belakang diset ke nilai RGB tertentu.
+
+```cpp
+game->SetBackgroundColor(102, 195, 242);
+```
+
+## c. Fungsi Reset Game (`ResetGameState`)
+Fungsi ini digunakan untuk mengatur ulang status permainan setiap kali game dimulai ulang. Ini mencakup pengaturan posisi karakter, skor, *timer*, dan mengosongkan daftar *obstacles*.
+
+```cpp
+void Engine::DinoGameScreen::ResetGameState() {
+    monsterSprite->SetPosition(90, 0);
+    yVelocity = 0;
+    jump = false;
+    score = 0;
+    scoreUpdateTime = 0;
+    obstacleSpawnTimer = 0;
+    timeElapsed = 0;
+    spawnInterval = 1500;
+    cactusSpeed = 0.5f;
+
+    for (Sprite* obstacle : obstacles) {
+        delete obstacle;
+    }
+    obstacles.clear();
+    obstacleSpawnTimer = 0;
+    gameOver = false;
+
+    if (music) {
+        music->Play(true);
+    }
+}
+```
+
+## d. Fungsi `spawnObstacle`
+Fungsi ini untuk menghasilkan rintangan kaktus secara acak di posisi kanan layar. Fungsi memilih tekstur kaktus dari daftar dan menambahkan sprite kaktus ke daftar `obstacles`.
+
+```cpp
+void Engine::DinoGameScreen::spawnObstacle()
+{
+    int randomIndex = rand() % cactusTextures.size();
+    Texture* cactusTexture = new Texture(cactusTextures[randomIndex]);
+
+    Sprite* cactus = new Sprite(cactusTexture, game->GetDefaultSpriteShader(), game->GetDefaultQuad());
+    cactus->SetScale(4.0f);
+    cactus->SetPosition(game->GetSettings()->screenWidth, 0);
+    cactus->SetBoundingBoxSize(cactus->GetScaleWidth() - (16 * cactus->GetScale()), cactus->GetScaleHeight() - (4 * cactus->GetScale()));
+
+    obstacles.push_back(cactus);
 }
 ```
 
