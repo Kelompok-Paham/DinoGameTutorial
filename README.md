@@ -744,17 +744,17 @@ void Engine::DinoRestartMenuScreen::SetFinalScore(int finalScore) {
 }
 ```
 
-##6. Dino game.cpp
+## 6. Dino game.cpp
 Kelas ini berfungsi sebagai struktur dasar game yang memungkinkan perpindahan antara layar menu utama dan layar permainan serta pengaturan loop utama yang menyatukan pembaruan dan rendering layar. Berikut adalah penjelasan fungsi dan alur kode:
-###1. Struktur Program
-####a. Inklusi Header:
+### 1. Struktur Program
+#### a. Inklusi Header:
 ```cpp
 #include "Lesson12_DinoGame.h"
 #include "DinoMainMenuScreen.h"
 #include "DinoGameScreen.h"
 ```
 Tiga header ini menyertakan deklarasi yang dibutuhkan, termasuk kelas Lesson12_DinoGame, DinoMainMenuScreen, dan DinoGameScreen.
-####b. Konstruktor Lesson12_DinoGame:
+#### b. Konstruktor Lesson12_DinoGame:
 ```cpp
 Engine::Lesson12_DinoGame::Lesson12_DinoGame(Setting* setting) :Engine::Game(setting)
 {
@@ -762,15 +762,15 @@ Engine::Lesson12_DinoGame::Lesson12_DinoGame(Setting* setting) :Engine::Game(set
 }
 ```
 Konstruktor ini memanggil konstruktor dari kelas dasar Game dengan objek setting dan mengatur judul jendela game menjadi "Dino Game".
-####c. Destruktor Lesson12_DinoGame:
+#### c. Destruktor Lesson12_DinoGame:
 ```cpp
 Engine::Lesson12_DinoGame::~Lesson12_DinoGame()
 {
 }
 ```
 Destruktor kosong, tetapi mungkin akan digunakan untuk membersihkan sumber daya ketika objek Lesson12_DinoGame dihapuskan.
-###2. Metode dalam Lesson12_DinoGame
-####a. Init():
+### 2. Metode dalam Lesson12_DinoGame
+#### a. Init():
 ```cpp
 void Engine::Lesson12_DinoGame::Init()
 {
@@ -782,7 +782,7 @@ Metode Init menginisialisasi layar dalam game menggunakan ScreenManager. ScreenM
 * "ingame": merupakan instance DinoGameScreen, yang digunakan untuk menampilkan layar utama saat gameplay berlangsung.
 * "mainmenu": merupakan instance DinoMainMenuScreen, yang berfungsi sebagai layar menu utama ketika game pertama kali dijalankan.
 * "restartmenu": merupakan instance DinoRestartMenuScreen, yang ditampilkan ketika game over dan memungkinkan pemain untuk memulai ulang atau kembali ke menu utama.
-####b. Update():
+#### b. Update():
 ```cpp
 void Engine::Lesson12_DinoGame::Update()
 {
@@ -790,7 +790,7 @@ void Engine::Lesson12_DinoGame::Update()
 }
 ```
 Update() memanggil metode Update() pada ScreenManager, yang akan menangani logika atau status game setiap frame (misalnya, untuk mendeteksi input pengguna).
-####c. Render():
+#### c. Render():
 ```cpp
 void Engine::Lesson12_DinoGame::Render()
 {
