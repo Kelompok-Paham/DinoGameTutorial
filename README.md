@@ -439,6 +439,200 @@ jump = true;
 sound->Play(false);
 }
 ```
+*   Pembaruan Posisi Vertikal dan Efek Gravitasi
+
+Ketika tombol Jump ditekan, kode dibawah mengatur pergerakan vertikal karakter dengan mengaplikasikan gravitasi ketika karakter berada di udara dan menghentikannya saat mencapai tanah.
+```cpp
+if (y > 0) {
+    yVelocity -= gravity;
+} else if (y < 0) {
+    jump = false;
+    yVelocity = 0;
+    y = 0;
+}
+```
+y += yVelocity * game->GetGameTime();
+monsterSprite->SetPosition(x, y);
+
+
+*   Deteksi Input Lompatan dan Animasi
+
+Kode dibawah digunakan untuk memeriksa apakah ketika tombol Jump ditekan, animasi yang dijalankan adalah animasi dari sprite jump.
+```cpp
+if (game->GetInputManager()->IsKeyPressed("Jump")) {
+    monsterSprite->PlayAnim("jump");
+}
+```
+
+*   Pembaruan Animasi Karakter
+
+Kode dibawah digunakan untuk memperbarui animasi karakter berdasarkan waktu permainannya.
+```cpp
+monsterSprite->Update(game->GetGameTime());
+```
+
+*   Peningkatan Kesulitan Permainan
+
+Kode dibawah berfungsi untuk meningkat tingkat kesulitan permainan secara bertahap dengan mempercepat kemunculan dan kecepatan kaktus setiap 10 detik. Setiap kali timeElapsed mencapai atau melebihi 10.000 (misal: 10 detik), nilai spawnInterval dikurangi dan cactusSpeed ditambah, sambil memastikan nilai-nilai ini tidak melampaui batas minimum dan maksimum yang telah ditentukan. Setelah perubahan diterapkan, timeElapsed di-reset ke 0 untuk memulai penghitungan waktu berikutnya.
+```cpp
+timeElapsed += game->GetGameTime();
+if (timeElapsed >= 10000) {
+    spawnInterval -= 100;
+    cactusSpeed += 0.2f;
+    if (spawnInterval < minSpawnInterval) spawnInterval = minSpawnInterval;
+    if (cactusSpeed > maxCactusSpeed) cactusSpeed = maxCactusSpeed;
+    timeElapsed = 0;
+}
+```
+
+*   Pembuatan Rintangan Berdasarkan Timer
+
+Pada kode dibawah, variabel obstacleSpawnTimer akan bertambah sesuai dengan waktu permainan, dan randomSpawnTime menentukan waktu acak untuk menunggu sebelum rintangan baru muncul. Jika obstacleSpawnTimer melebihi atau sama dengan randomSpawnTime, fungsi spawnObstacle() dipanggil untuk memunculkan rintangan, lalu obstacleSpawnTimer di-reset ke 0 untuk mulai menghitung ulang.
+```cpp
+obstacleSpawnTimer += game->GetGameTime();
+int randomSpawnTime = rand() % 4000 + spawnInterval;
+if (obstacleSpawnTimer >= randomSpawnTime) {
+    spawnObstacle();
+    obstacleSpawnTimer = 0;
+}
+```
+
+*   Penghapusan Rintangan yang Keluar dari Layar dan Deteksi Tabrakan
+  
+Kode dibawah berfungsi untuk mengatur posisi dan status rintangan dalam permainan. Setiap rintangan dalam daftar obstacles diperbarui posisinya dengan menguranginya berdasarkan kecepatan kaktus (cactusSpeed) dan waktu permainan. Jika ada tabrakan antara karakter utama (monsterSprite) dan rintangan (obstacle), variabel gameOver akan menjadi true, layar permainan diubah ke "restartmenu", dan skor akhir ditampilkan. Rintangan yang keluar dari batas layar kiri (x < -150) akan dihapus dari memori, dan iterasi daftar obstacles berlanjut ke rintangan berikutnya.
+```cpp
+for (auto it = obstacles.begin(); it != obstacles.end(); ) {
+    Sprite* obstacle = *it;
+    obstacle->SetPosition(obstacle->GetPosition().x - cactusSpeed * game->GetGameTime(), obstacle->GetPosition().y);
+
+    if (monsterSprite->GetBoundingBox()->CollideWith(obstacle->GetBoundingBox())) {
+        gameOver = true;
+        ScreenManager::GetInstance(game)->SetCurrentScreen("restartmenu");
+        DinoRestartMenuScreen* restartMenu = dynamic_cast<DinoRestartMenuScreen*>(ScreenManager::GetInstance(game)->GetCurrentScreen());
+        if (restartMenu) {
+            restartMenu->SetFinalScore(score);
+        }
+        return;
+    }
+
+    if (obstacle->GetPosition().x < -150) {
+        delete obstacle;
+        it = obstacles.erase(it);
+    } else {
+        ++it;
+    }
+}
+```
+
+*   Mode Debug untuk Menampilkan Bounding Box
+
+Kode dibawah akan mengaktifkan tampilan titik-titik (dots) di setiap sudut bounding box untuk monsterSprite dan rintangan-rintangan (obstacles) jika variabel debug bernilai true. Bounding box (bb) dari monsterSprite diambil, lalu setiap titik (seperti dotSprite1) diposisikan di setiap sudut bounding box dengan mempertimbangkan skala titik untuk pusat penempatan yang tepat. Hal yang sama dilakukan untuk setiap rintangan dalam daftar obstacles: bounding box (bbObstacle) dari masing-masing rintangan diambil, dan titik-titik (seperti dotSprite11) diposisikan di sudut-sudutnya. Kode ini digunakan untuk mempermudah melihat area interaksi bounding box dan posisi presisi mereka dalam mode debug.
+```cpp
+if (debug) {
+    BoundingBox* bb = monsterSprite->GetBoundingBox();
+    dotSprite1->SetPosition(bb->GetVertices()[0].x - (0.5f * dotSprite1->GetScaleWidth()), bb->GetVertices()[0].y - (0.5f * dotSprite1->GetScaleHeight()));
+    // Pengaturan serupa untuk dotSprite2, dotSprite3, dotSprite4
+
+    for (Sprite* obstacle : obstacles) {
+        BoundingBox* bbObstacle = obstacle->GetBoundingBox();
+        dotSprite11->SetPosition(bbObstacle->GetVertices()[0].x - (0.5f * dotSprite11->GetScaleWidth()), bbObstacle->GetVertices()[0].y - (0.5f * dotSprite11->GetScaleHeight()));
+        // Pengaturan serupa untuk dotSprite22, dotSprite33, dotSprite44
+    }
+}
+```
+
+### e. Fungsi Draw
+Fungsi Draw() dalam kelas DinoGameScreen digunakan untuk menggambarkan elemen-elemen visual dalam permainan, dimulai dengan backgrounds, kemudian middlegrounds, lalu foregrounds. Selanjutnya, fungsi ini akan menampilkan teks untuk skor, game over, dan restart. Setelah itu, isi dari daftar obstacles dan karakter utama (monsterSprite) digambar. Jika mode debug aktif, titik-titik debug juga akan ditampilkan untuk mempermudah melihat penempatan dari posisi bounding box.
+
+```cpp
+void Engine::DinoGameScreen::Draw()
+{
+   DrawLayer(backgrounds);
+   DrawLayer(middlegrounds);
+   DrawLayer(foregrounds);
+   textScore->Draw();
+   textGameOver->Draw();
+   textRestart->Draw();
+
+   for (Sprite* obstacle : obstacles) {
+       obstacle->Draw();
+   }
+
+   monsterSprite->Draw();
+
+   if (debug) {
+       dotSprite1->Draw();
+       dotSprite2->Draw();
+       dotSprite3->Draw();
+       dotSprite4->Draw();
+       dotSprite11->Draw();
+       dotSprite22->Draw();
+       dotSprite33->Draw();
+       dotSprite44->Draw();
+   }
+}
+```
+
+### f. Fungsi MoveLayer
+Fungsi MoveLayer() dalam kelas DinoGameScreen digunakan untuk menggerakkan lapisan latar belakang (bg) berdasarkan kecepatan yang ditentukan. Dalam setiap iterasi, fungsi memeriksa apakah posisi horizontal (x) dari setiap sprite dalam latar belakang telah keluar dari layar kiri (kurang dari -screenWidth ditambah offset). Jika ya, posisi sprite diatur kembali ke sisi kanan layar untuk menciptakan efek loop. Kemudian, posisi sprite diperbarui dengan mengurangi kecepatan (speed) yang dikalikan dengan waktu permainan (game->GetGameTime()), dan setiap sprite juga diperbarui secara umum.
+
+```cpp
+void Engine::DinoGameScreen::MoveLayer(vector<Sprite*>& bg, float speed)
+{
+   for (Sprite* s : bg) {
+       if (s->GetPosition().x < -game->GetSettings()->screenWidth + offset) {
+           s->SetPosition(game->GetSettings()->screenWidth + offset - 1, 0);
+       }
+       s->SetPosition(s->GetPosition().x - speed * game->GetGameTime(), s->GetPosition().y);
+       s->Update(game->GetGameTime());
+   }
+}
+```
+
+### g. Fungsi DrawLayer
+Fungsi ini berfungsi untuk menggambar semua sprite dalam lapisan latar belakang (bg). Dengan menggunakan loop, fungsi ini memanggil metode Draw() pada setiap sprite (s) dalam vektor bg, sehingga setiap elemen visual di lapisan tersebut ditampilkan di layar. Fungsi ini sederhana namun efektif untuk memastikan semua elemen dalam lapisan tersebut digambar.
+```cpp
+void Engine::DinoGameScreen::DrawLayer(vector<Sprite*>& bg)
+{
+   for (Sprite* s : bg) {
+       s->Draw();
+   }
+}
+```
+
+### h. Fungsi AddToLayer
+Fungsi AddToLayer() menambahkan dua sprite ke lapisan latar belakang (bg) menggunakan tekstur yang diberikan berdasarkan nama. Pertama, sebuah objek Texture dibuat dari nama yang diterima, dan sprite pertama (s) dibuat dengan tekstur ini, menggunakan shader dan quad default, serta diatur ukurannya sesuai dengan lebar dan tinggi layar. Sprite kedua (s2) juga dibuat dengan tekstur yang sama, diatur dengan ukuran yang sama, dan posisinya ditetapkan di luar layar kanan untuk menciptakan efek tampilan yang berulang. Kedua sprite kemudian ditambahkan ke vektor bg, sehingga keduanya akan digambar di lapisan latar belakang. 
+```cpp
+void Engine::DinoGameScreen::AddToLayer(vector<Sprite*>& bg, const std::string& name)
+{
+   Texture* texture = new Texture(name);
+
+   Sprite* s = new Sprite(texture, game->GetDefaultSpriteShader(), game->GetDefaultQuad());
+   s->SetSize(game->GetSettings()->screenWidth + offset, game->GetSettings()->screenHeight);
+   bg.push_back(s);
+
+   Sprite* s2 = new Sprite(texture, game->GetDefaultSpriteShader(), game->GetDefaultQuad());
+   s2->SetSize(game->GetSettings()->screenWidth + offset, game->GetSettings()->screenHeight)->SetPosition(game->GetSettings()->screenWidth + offset - 1, 0);
+   bg.push_back(s2);
+}
+```
+
+### i. Fungsi spawnObstacle()
+Fungsi ini digunakan untuk membuat dan menambahkan rintangan (kaktus) baru ke dalam permainan. Pertama, indeks acak dipilih dari daftar tekstur kaktus (cactusTextures), dan tekstur baru dibuat berdasarkan indeks tersebut. Kemudian, objek Sprite untuk kaktus dibuat dengan tekstur tersebut, diatur skalanya menjadi 4.0, dan posisinya ditetapkan di luar layar kanan (screenWidth). Bounding box kaktus disesuaikan ukurannya berdasarkan skala untuk memastikan kolisi yang tepat, dan akhirnya kaktus tersebut ditambahkan ke dalam vektor obstacles agar dapat ditampilkan dalam permainan.
+```cpp
+void Engine::DinoGameScreen::spawnObstacle()
+{
+   int randomIndex = rand() % cactusTextures.size();
+   Texture* cactusTexture = new Texture(cactusTextures[randomIndex]);
+
+   Sprite* cactus = new Sprite(cactusTexture, game->GetDefaultSpriteShader(), game->GetDefaultQuad());
+   cactus->SetScale(4.0f);
+   cactus->SetPosition(game->GetSettings()->screenWidth, 0);
+   cactus->SetBoundingBoxSize(cactus->GetScaleWidth() - (16 * cactus->GetScale()), cactus->GetScaleHeight() - (4 * cactus->GetScale()));
+
+   obstacles.push_back(cactus);
+}
+```
 
 ## 5. Restart Menu
 Fungsi-fungsi di dalam kelas `DinoRestartMenuScreen` bertujuan untuk menyediakan tampilan dan interaksi menu restart ketika pemain kalah. Kelas ini mengelola semua aspek visual dan logika navigasi dalam layar restart, memastikan pengguna dapat memilih antara mengulang permainan atau keluar.
