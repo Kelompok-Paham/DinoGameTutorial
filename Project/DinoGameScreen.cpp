@@ -79,7 +79,8 @@ void Engine::DinoGameScreen::Init()
 	textGameOver = new Text("lucon.ttf", 24, game->GetDefaultTextShader());
 	textRestart = new Text("lucon.ttf", 24, game->GetDefaultTextShader());
 
-	textScore->SetScale(2.0f)->SetColor(0, 0, 0)->SetPosition(0, game->GetSettings()->screenHeight - (textScore->GetFontSize() * textScore->GetScale()));
+	int offset = 20; // Atur offset sesuai kebutuhan
+	textScore->SetScale(2.0f)->SetColor(0, 0, 0)->SetPosition(50, game->GetSettings()->screenHeight - (textScore->GetFontSize() * textScore->GetScale()) - offset);
 	//Set the background color
 	game->SetBackgroundColor(102, 195, 242);
 	// Set debug
