@@ -152,7 +152,7 @@ void Engine::DinoMainMenuScreen::Draw()
 }
 ```
 
-## 3. Game Screen
+## 2. Game Screen
 Kelas DinoGameScreen berfungsi sebagai papan permainan game yang dibuat. Dalam kelas ini, kita akan membuat elemen-elemen utama seperti latar belakang, karakter, musik, text, dan berbagai komponen lainnya yang diperlukan untuk game. Pada kelas ini juga ditentukan apa yang bisa dilakukan oleh pemain, bagaimana rintangan dimunculkan, peraturan skor, dan sebagainya. 
 
 Pada file DinoGameScreen.h, didefinisikan fungsi dan variabel yang diperlukan. Berikut adalah implementasi dari file DinoGameScreen.h:
@@ -634,7 +634,7 @@ void Engine::DinoGameScreen::spawnObstacle()
 }
 ```
 
-## 5. Restart Menu
+## 3. Restart Menu
 Fungsi-fungsi di dalam kelas `DinoRestartMenuScreen` bertujuan untuk menyediakan tampilan dan interaksi menu restart ketika pemain kalah. Kelas ini mengelola semua aspek visual dan logika navigasi dalam layar restart, memastikan pengguna dapat memilih antara mengulang permainan atau keluar.
 
 ### Penjelasan Fungsi
@@ -938,7 +938,7 @@ void Engine::DinoRestartMenuScreen::SetFinalScore(int finalScore) {
 }
 ```
 
-## 6. Dino game
+## 4. Dino game
 Kelas ini berfungsi sebagai struktur dasar game yang memungkinkan perpindahan antara layar menu utama dan layar permainan serta pengaturan loop utama yang menyatukan pembaruan dan rendering layar. Berikut adalah penjelasan fungsi dan alur kode:
 ### 1. Struktur Program
 #### a. Inklusi Header:
@@ -1029,122 +1029,126 @@ void Engine::Lesson12_DinoGame::Render()
 }
 ```
 
-Text can be **bold**, _italic_, or ~~strikethrough~~.
+## 5. Launcher.cpp
+"launcher" biasanya merujuk pada komponen atau fungsi yang digunakan untuk memulai atau menyiapkan suatu program atau aplikasi. Berikut adalah penjelasan bagian-bagian dari kode ini:
 
-[Link to another page](./another-page.html).
+### 1. Inklusi Header
+```cpp
+#include "Setting.h"
+#include "Game.h"
+#include "Lesson01_BgColor.h"
+#include "Lesson02_Lerp.h"
+#include "Lesson03_Animation.h"
+#include "Lesson04_Movement.h"
+#include "Lesson05_Input.h"
+#include "Lesson06_ObjectPool.h"
+#include "Lesson07_GUI.h"
+#include "Lesson08_Rotation.h"
+#include "Lesson09_Bullet.h"
+#include "Lesson10_Platform.h"
+#include "Lesson11_ParallaxScrolling.h"
+#include "Lesson12_DinoGame.h"
+#include "Lesson12_Dino.h"
+#include "DinoGameDum.h"
+#include "DinoMainMenuScreen.h"
+#include "LessonAI01_SteeringBehaviors.h"
+#include "LessonAI02_NPCWave.h"
+```
 
-There should be whitespace between paragraphs.
+Ini memuat semua header yang diperlukan untuk menjalankan game yang mungkin mencakup fitur dan mekanik game tertentu.
 
-There should be whitespace between paragraphs. We recommend including a README, or a file with information about your project.
+### 2. Fungsi main
+```cpp
+int main(int argc, char** argv) { 
+	Engine::Setting* setting = new Engine::Setting();
+	setting->screenWidth = 1600;
+	setting->screenHeight = 900;
+	setting->windowFlag = Engine::WindowFlag::FULLSCREEN;
+	setting->vsync = false;
+	setting->targetFrameRate = 75;
+	Engine::Game* game = new Engine::Lesson12_DinoGame(setting);
+	//Engine::Game* game = new Engine::Lesson07_GUI(setting);
 
+	game->Run();
+	delete setting;
+	delete game;
 
-
-
-### Dino Game
-
-> This is a blockquote following a header.
->
-> When something is important enough, you do it even if the odds are not in your favor.
-
-### Header 3
-
-```js
-// Javascript code with syntax highlighting.
-var fun = function lang(l) {
-  dateformat.i18n = require('./lang/' + l)
-  return true;
+	return 0;
 }
 ```
-
-```ruby
-# Ruby code with syntax highlighting
-GitHubPages::Dependencies.gems.each do |gem, version|
-  s.add_dependency(gem, "= #{version}")
-end
+Pada fungsi main, dilakukan beberapa langkah berikut:
+#### a. Inisialisasi Setting:
+```cpp
+Engine::Setting* setting = new Engine::Setting();
 ```
+Ini membuat objek Setting untuk konfigurasi awal permainan, seperti ukuran layar, mode layar penuh, sinkronisasi vertikal, dan kecepatan frame target.
 
-### Header 4
-
-*   This is an unordered list following a header.
-*   This is an unordered list following a header.
-*   This is an unordered list following a header.
-
-### Header 5
-
-1.  This is an ordered list following a header.
-2.  This is an ordered list following a header.
-3.  This is an ordered list following a header.
-
-### Header 6
-
-| head1        | head two          | three |
-|:-------------|:------------------|:------|
-| ok           | good swedish fish | nice  |
-| out of stock | good and plenty   | nice  |
-| ok           | good `oreos`      | hmm   |
-| ok           | good `zoute` drop | yumm  |
-
-### There's a horizontal rule below this.
-
-* * *
-
-### Here is an unordered list:
-
-*   Item foo
-*   Item bar
-*   Item baz
-*   Item zip
-
-### And an ordered list:
-
-1.  Item one
-1.  Item two
-1.  Item three
-1.  Item four
-
-### And a nested list:
-
-- level 1 item
-  - level 2 item
-  - level 2 item
-    - level 3 item
-    - level 3 item
-- level 1 item
-  - level 2 item
-  - level 2 item
-  - level 2 item
-- level 1 item
-  - level 2 item
-  - level 2 item
-- level 1 item
-
-### Small image
-
-![Octocat](https://github.githubassets.com/images/icons/emoji/octocat.png)
-
-### Large image
-
-![Branching](https://guides.github.com/activities/hello-world/branching.png)
-
-
-### Definition lists can be used with HTML syntax.
-
-<dl>
-<dt>Name</dt>
-<dd>Godzilla</dd>
-<dt>Born</dt>
-<dd>1952</dd>
-<dt>Birthplace</dt>
-<dd>Japan</dd>
-<dt>Color</dt>
-<dd>Green</dd>
-</dl>
-
+#### b. Pengaturan Resolusi, Layar Penuh, dan V-Sync:
+```cpp
+setting->screenWidth = 1600;
+setting->screenHeight = 900;
+setting->windowFlag = Engine::WindowFlag::FULLSCREEN;
+setting->vsync = false;
+setting->targetFrameRate = 75;
 ```
-Long, single-line code blocks should not wrap. They should horizontally scroll if they are too long. This line should be long enough to demonstrate this.
+Beberapa pengaturan utama termasuk:
+* Resolusi: Layar diatur ke resolusi 1600x900.
+* Layar Penuh: Pengaturan windowFlag dengan Engine::WindowFlag::FULLSCREEN menunjukkan mode layar penuh.
+* VSync: vsync = false berarti sinkronisasi vertikal dinonaktifkan.
+* Target Frame Rate: Ditentukan ke 75 frame per detik.
+  
+#### c. Memilih Game yang Akan Dijalankan:
+```cpp
+Engine::Game* game = new Engine::Lesson12_DinoGame(setting);
 ```
+Engine::Lesson12_DinoGame dipilih untuk dijalankan. Jika  ingin menjalankan pelajaran lain,  cukup mengganti instansiasi objek Game yang sesuai (misalnya, Lesson07_GUI atau kelas lainnya).
 
-
+#### d. Menjalankan Game:
+```cpp
+game->Run();
 ```
-The final element.
+Run() memulai loop utama game, di mana game akan terus berjalan hingga pengguna keluar atau game berakhir.
+
+#### e. Menghapus Objek yang Dialokasikan:
+```cpp
+delete setting;
+delete game;
+```
+Setelah game selesai dijalankan, objek setting dan game dihapus untuk membebaskan memori.
+
+#### Kode Keseluruhan
+```cpp
+#include "Setting.h"
+#include "Game.h"
+
+#include "Lesson01_BgColor.h"
+#include "Lesson02_Lerp.h"
+#include "Lesson03_Animation.h"
+#include "Lesson04_Movement.h"
+#include "Lesson05_Input.h"
+#include "Lesson06_ObjectPool.h"
+#include "Lesson07_GUI.h"
+#include "Lesson08_Rotation.h"
+#include "Lesson09_Bullet.h"
+#include "Lesson10_Platform.h"
+#include "Lesson11_ParallaxScrolling.h"
+#include "Lesson12_DinoGame.h"
+
+#include "LessonAI01_SteeringBehaviors.h"
+#include "LessonAI02_NPCWave.h"
+
+int main(int argc, char** argv) { 
+	Engine::Setting* setting = new Engine::Setting();
+	setting->screenWidth = 1600;
+	setting->screenHeight = 900;
+	setting->windowFlag = Engine::WindowFlag::WINDOWED;
+	setting->vsync = false;
+	setting->targetFrameRate = 75;
+	Engine::Game* game = new Engine::Lesson12_DinoGame(setting);
+	game->Run();
+	delete setting;
+	delete game;
+
+	return 0;
+}
 ```
