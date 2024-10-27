@@ -390,8 +390,10 @@ Fungsi-fungsi di dalam kelas `DinoRestartMenuScreen` bertujuan untuk menyediakan
 
 ### Penjelasan Fungsi
 #### 1. Konstruktor DinoRestartMenuScreen()
-* Fungsi: Konstruktor ini bertujuan untuk inisialisasi awal variabel-variabel anggota dalam kelas DinoRestartMenuScreen, yaitu text, bgSprite, dan textGameOver, yang diatur ke NULL sebagai nilai awal.
-* Penjelasan: Dengan mengatur nilai awal variabel ke NULL, konstruktor memastikan bahwa variabel-variabel tersebut tidak memiliki nilai sampah yang bisa menyebabkan masalah saat digunakan.
+##### Fungsi:
+Konstruktor ini bertujuan untuk inisialisasi awal variabel-variabel anggota dalam kelas DinoRestartMenuScreen, yaitu text, bgSprite, dan textGameOver, yang diatur ke NULL sebagai nilai awal.
+##### Penjelasan:
+Dengan mengatur nilai awal variabel ke NULL, konstruktor memastikan bahwa variabel-variabel tersebut tidak memiliki nilai sampah yang bisa menyebabkan masalah saat digunakan.
 
 #### Kode
 ```cpp
@@ -405,17 +407,18 @@ Engine::DinoRestartMenuScreen::DinoRestartMenuScreen()
 ```
 
 #### 2. Init()
-* Fungsi: Init() bertugas untuk menginisialisasi elemen-elemen visual dan input pada layar restart game, termasuk:
-Latar belakang (bgSprite)
-Tombol restart dan tombol keluar
-Teks "Game Over" dan skor akhir
-Input navigasi tombol menggunakan panah kanan dan kiri serta tombol Space untuk memilih.
-* Penjelasan:
-Membuat sprite latar belakang yang menyesuaikan dengan ukuran layar game.
-Membuat tombol restart dan tombol keluar (restartButton dan exitButton), menambahkan animasi normal, hover, dan press untuk efek visual saat tombol dipilih atau ditekan, dan menentukan posisi tombol di layar.
-Membuat teks "Game Over" dan skor akhir dengan pengaturan warna, font, dan ukuran yang sesuai.
-Menambahkan input navigasi untuk berpindah antar tombol dan mengonfirmasi pilihan.
-Menyimpan tombol dalam daftar buttons, serta mengatur tombol restartButton sebagai tombol default yang dipilih (dengan status HOVER).
+##### Fungsi:
+Init() bertugas untuk menginisialisasi elemen-elemen visual dan input pada layar restart game, termasuk:
+* Latar belakang (bgSprite)
+* Tombol restart dan tombol keluar
+* Teks "Game Over" dan skor akhir
+* Input navigasi tombol menggunakan panah kanan dan kiri serta tombol Space untuk memilih.
+##### Penjelasan:
+* Membuat sprite latar belakang yang menyesuaikan dengan ukuran layar game.
+* Membuat tombol restart dan tombol keluar (restartButton dan exitButton), menambahkan animasi normal, hover, dan press untuk efek visual saat tombol dipilih atau ditekan, dan menentukan posisi tombol di layar.
+* Membuat teks "Game Over" dan skor akhir dengan pengaturan warna, font, dan ukuran yang sesuai.
+* Menambahkan input navigasi untuk berpindah antar tombol dan mengonfirmasi pilihan.
+* Menyimpan tombol dalam daftar buttons, serta mengatur tombol restartButton sebagai tombol default yang dipilih (dengan status HOVER).
 
 #### Kode
 ```cpp
@@ -468,13 +471,14 @@ void Engine::DinoRestartMenuScreen::Init()
 ```
 
 #### 3. Update()
-* Fungsi: Update() menangani logika yang berkaitan dengan interaksi pengguna, yaitu navigasi antar tombol dan pemrosesan ketika tombol ditekan.
-* Penjelasan:
-Mengubah warna latar belakang sesuai dengan kebutuhan tampilan menu restart.
-Menangani navigasi antar tombol dengan memeriksa apakah pengguna menekan next (panah kanan) atau prev (panah kiri), lalu memperbarui status tombol yang sedang dipilih.
-Jika pengguna menekan tombol press (tombol Space), Update() mengecek tombol mana yang dipilih dan menentukan tindakan:
-Tombol Restart: Mengganti layar saat ini ke DinoGameScreen (layar utama game) dan memanggil ResetGameState() untuk memulai ulang permainan.
-Tombol Exit: Mengatur status game ke EXIT, yang menandakan game akan keluar.
+##### Fungsi:
+Update() menangani logika yang berkaitan dengan interaksi pengguna, yaitu navigasi antar tombol dan pemrosesan ketika tombol ditekan.
+##### Penjelasan:
+* Mengubah warna latar belakang sesuai dengan kebutuhan tampilan menu restart.
+* Menangani navigasi antar tombol dengan memeriksa apakah pengguna menekan next (panah kanan) atau prev (panah kiri), lalu memperbarui status tombol yang sedang dipilih.
+* Jika pengguna menekan tombol press (tombol Space), Update() mengecek tombol mana yang dipilih dan menentukan tindakan:
+* Tombol Restart: Mengganti layar saat ini ke DinoGameScreen (layar utama game) dan memanggil ResetGameState() untuk memulai ulang permainan.
+* Tombol Exit: Mengatur status game ke EXIT, yang menandakan game akan keluar.
 
 #### Kode
 ```cpp
@@ -523,11 +527,12 @@ void Engine::DinoRestartMenuScreen::Update()
 ```
 
 #### 4. Draw()
-* Fungsi: Draw() bertugas untuk menggambar elemen-elemen visual di layar, termasuk latar belakang, tombol-tombol, serta teks "Game Over" dan skor akhir.
-* Penjelasan:
-Memanggil Draw() pada bgSprite untuk menampilkan latar belakang.
-Melakukan loop melalui daftar buttons dan memanggil Draw() pada setiap tombol untuk menampilkan status terkini (normal, hover, atau press).
-Menampilkan teks "Game Over" dan teks skor akhir (text dan textGameOver).
+##### Fungsi:
+Draw() bertugas untuk menggambar elemen-elemen visual di layar, termasuk latar belakang, tombol-tombol, serta teks "Game Over" dan skor akhir.
+##### Penjelasan:
+* Memanggil Draw() pada bgSprite untuk menampilkan latar belakang.
+* Melakukan loop melalui daftar buttons dan memanggil Draw() pada setiap tombol untuk menampilkan status terkini (normal, hover, atau press).
+* Menampilkan teks "Game Over" dan teks skor akhir (text dan textGameOver).
 
 #### Kode
 ```cpp
@@ -545,10 +550,11 @@ void Engine::DinoRestartMenuScreen::Draw()
 ```
 
 #### 5. SetFinalScore(int finalScore)
-* Fungsi: SetFinalScore() digunakan untuk memperbarui teks yang menampilkan skor akhir.
-* Penjelasan:
-Mengubah teks textGameOver untuk menampilkan nilai skor akhir menggunakan parameter finalScore.
-Mengatur posisi dan warna dari teks skor akhir agar sesuai dengan tampilan menu.
+##### Fungsi:
+SetFinalScore() digunakan untuk memperbarui teks yang menampilkan skor akhir.
+##### Penjelasan:
+* Mengubah teks textGameOver untuk menampilkan nilai skor akhir menggunakan parameter finalScore.
+* Mengatur posisi dan warna dari teks skor akhir agar sesuai dengan tampilan menu.
 
 #### Kode
 ```cpp
