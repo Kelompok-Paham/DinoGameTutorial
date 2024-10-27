@@ -744,6 +744,61 @@ void Engine::DinoRestartMenuScreen::SetFinalScore(int finalScore) {
 }
 ```
 
+##6. Dino game.cpp
+Kelas ini berfungsi sebagai struktur dasar game yang memungkinkan perpindahan antara layar menu utama dan layar permainan serta pengaturan loop utama yang menyatukan pembaruan dan rendering layar. Berikut adalah penjelasan fungsi dan alur kode:
+###1. Struktur Program
+####a. Inklusi Header:
+```cpp
+#include "Lesson12_DinoGame.h"
+#include "DinoMainMenuScreen.h"
+#include "DinoGameScreen.h"
+```
+Tiga header ini menyertakan deklarasi yang dibutuhkan, termasuk kelas Lesson12_DinoGame, DinoMainMenuScreen, dan DinoGameScreen.
+####b. Konstruktor Lesson12_DinoGame:
+```cpp
+Engine::Lesson12_DinoGame::Lesson12_DinoGame(Setting* setting) :Engine::Game(setting)
+{
+    setting->windowTitle = "Dino Game";
+}
+```
+Konstruktor ini memanggil konstruktor dari kelas dasar Game dengan objek setting dan mengatur judul jendela game menjadi "Dino Game".
+####c. Destruktor Lesson12_DinoGame:
+```cpp
+Engine::Lesson12_DinoGame::~Lesson12_DinoGame()
+{
+}
+```
+Destruktor kosong, tetapi mungkin akan digunakan untuk membersihkan sumber daya ketika objek Lesson12_DinoGame dihapuskan.
+###2. Metode dalam Lesson12_DinoGame
+####a. Init():
+```cpp
+void Engine::Lesson12_DinoGame::Init()
+{
+    Engine::ScreenManager::GetInstance(this)->AddScreen("ingame", new DinoGameScreen())
+        ->AddScreen("mainmenu", new DinoMainMenuScreen())->SetCurrentScreen("mainmenu");
+}
+```
+Metode Init menginisialisasi layar dalam game menggunakan ScreenManager. ScreenManager menambahkan tiga layar:
+* "ingame": merupakan instance DinoGameScreen, yang digunakan untuk menampilkan layar utama saat gameplay berlangsung.
+* "mainmenu": merupakan instance DinoMainMenuScreen, yang berfungsi sebagai layar menu utama ketika game pertama kali dijalankan.
+* "restartmenu": merupakan instance DinoRestartMenuScreen, yang ditampilkan ketika game over dan memungkinkan pemain untuk memulai ulang atau kembali ke menu utama.
+####b. Update():
+```cpp
+void Engine::Lesson12_DinoGame::Update()
+{
+    Engine::ScreenManager::GetInstance(this)->Update();
+}
+```
+Update() memanggil metode Update() pada ScreenManager, yang akan menangani logika atau status game setiap frame (misalnya, untuk mendeteksi input pengguna).
+####c. Render():
+```cpp
+void Engine::Lesson12_DinoGame::Render()
+{
+    Engine::ScreenManager::GetInstance(this)->Draw();
+}
+```
+Render() memanggil Draw() dari ScreenManager, yang menampilkan tampilan grafis pada layar sesuai dengan tampilan atau elemen game yang aktif.
+
 Text can be **bold**, _italic_, or ~~strikethrough~~.
 
 [Link to another page](./another-page.html).
@@ -752,9 +807,8 @@ There should be whitespace between paragraphs.
 
 There should be whitespace between paragraphs. We recommend including a README, or a file with information about your project.
 
-### Header 1
 
-This is a normal paragraph following a header. GitHub is a code hosting platform for version control and collaboration. It lets you and others work together on projects from anywhere.
+
 
 ### Dino Game
 
